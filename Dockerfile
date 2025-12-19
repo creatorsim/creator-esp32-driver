@@ -37,4 +37,5 @@ ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH="/app/"
 
 # run
-CMD ["flask", "--app", "gateway.py", "run", "--host", "0.0.0.0", "--port", "8080"]
+# just using python3 _should_ work, it's in the path, but idk why not
+CMD ["/app/.venv/bin/python3", "gateway.py"]
