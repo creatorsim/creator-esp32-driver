@@ -1,7 +1,7 @@
-# creatorDriver
-Upgrade of CREATOR's actual driver with
-- GDBGUI interface
-- ECALL module
+# creator-gateway-esp32
+CREATOR gateway for [Espressif ESP32](https://www.espressif.com/en/products/socs/esp32).
+
+[Documentation](https://creatorsim.github.io/creator-wiki/web/gateway.md#executing-the-esp32-gateway).
 
 
 ## Development

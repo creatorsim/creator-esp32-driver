@@ -1,3 +1,8 @@
-/.venv/
+.vscode/
+.venv/
+.DS_Store
+
 tmp_assembly.s
 openocd.log
+/openocd-esp32*
+

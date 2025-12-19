@@ -22,9 +22,8 @@ By Elisa Utrilla Arroyo
    ```bash
    python3.9 -m venv ~/.espressif/python_env/idf5.3_py3.9_en
    source ~/.espressif/python_env/idf5.3_py3.9_env/bin/activate
-
-
    ```
+
    ⚠️ If you have a newer virtual environment version for espressif, by default it will go there. Erase the virtual environments that you are not using by doing (for example):
 
    ```

@@ -716,4 +716,5 @@ def post_job():
 
 
 # Run
-app.run(host='0.0.0.0', port=8080, use_reloader=False, debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080, use_reloader=False, debug=True)
