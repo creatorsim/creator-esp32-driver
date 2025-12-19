@@ -52,6 +52,7 @@ def do_fullclean_request(request):
     if error == 0:
        req_data['status'] += 'Full clean done.\n'    
   except Exception as e:
+    logging.exception(e)
     req_data['status'] += str(e) + '\n'
   return jsonify(req_data)
 
@@ -69,6 +70,7 @@ def do_eraseflash_request(request):
        req_data['status'] += 'Erase flash done. Please, unplug and plug the cable(s) again\n'
          
   except Exception as e:
+    logging.exception(e)
     req_data['status'] += str(e) + '\n'    
 
   return jsonify(req_data) 
@@ -84,6 +86,7 @@ def do_stop_monitor_request(request):
       req_data['status'] += 'Process stopped\n' 
     
   except Exception as e:
+    logging.exception(e)
     req_data['status'] += str(e) + '\n'
 
   return jsonify(req_data)
@@ -93,6 +96,7 @@ def do_get_form(request):
   try:
     return send_file('gateway.html')
   except Exception as e:
+    logging.exception(e)
     return str(e)
 
 
@@ -142,9 +146,8 @@ def creator_build(file_in, file_out):
 def do_cmd(req_data, cmd_array):
   try:
     result = subprocess.run(cmd_array, capture_output=False, timeout=60)
-  except:
-    logging.error("Something failed")
-    pass
+  except Exception as e:
+    logging.exception(e)
 
   if result.stdout != None:
     req_data['status'] += result.stdout.decode('utf-8') + '\n'
@@ -156,8 +159,9 @@ def do_cmd(req_data, cmd_array):
 def do_cmd_output(req_data, cmd_array):
   try:
     result = subprocess.run(cmd_array, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=60)
-  except:
-    pass
+  except Exception as e:
+    logging.exception(e)
+    return 1
 
   if result.stdout != None:
     req_data['status'] += result.stdout.decode('utf-8') + '\n'
@@ -256,6 +260,7 @@ def do_flash_request(request):
       error = do_cmd(req_data, ['idf.py', '-p', target_device, 'flash'])
 
   except Exception as e:
+    logging.exception(e)
     req_data['status'] += str(e) + '\n'
 
   return jsonify(req_data)
@@ -295,6 +300,7 @@ def do_monitor_request(request):
       logging.error("No elf found.")
               
   except Exception as e:
+    logging.exception(e)
     req_data['status'] += str(e) + '\n'
 
   return jsonify(req_data)
@@ -457,7 +463,8 @@ def running_in_docker():
             content = f.read()
             if 'docker' in content or 'kubepods' in content or 'containerd' in content:
                 return True
-    except Exception:
+    except Exception as e:
+        logging.exception(e)
         pass
 
     try:
@@ -629,25 +636,34 @@ def do_job_request(request):
     text_file.close()
 
     # transform th temporal assembly file
-    error = creator_build('tmp_assembly.s', "main/program.s");
+    logging.info("Generating file...")
+    error = creator_build('tmp_assembly.s', "main/program.s")
     if error != 0:
         req_data['status'] += 'Error adapting assembly file...\n'
 
     # flashing steps...
     if error == 0:
+      logging.info("Cleaning...")
       error = do_cmd_output(req_data, ['idf.py',  'fullclean'])
     if error == 0:
+      logging.info("Setting target...")
       error = do_cmd_output(req_data, ['idf.py',  'set-target', target_board])
     if error == 0:
+      logging.info("Building...")
       error = do_cmd_output(req_data, ['idf.py', 'build'])
     if error == 0:
+      logging.info("Flashing...")
       error = do_cmd_output(req_data, ['idf.py', '-p', target_device, 'flash'])
     if error == 0:
+      logging.info("Executing...")
       error = do_cmd_output(req_data, ['./gateway_monitor.sh', target_device, '50'])
       error = do_cmd_output(req_data, ['cat', 'monitor_output.txt'])
       error = do_cmd_output(req_data, ['rm', 'monitor_output.txt'])
+    
+      logging.info("Done")
 
   except Exception as e:
+    logging.exception(e)
     req_data['status'] += str(e) + '\n'
 
   return jsonify(req_data)
@@ -674,6 +690,7 @@ def post_flash():
   try:
     shutil.rmtree('build')
   except Exception as e:
+    logging.exception(e)
     pass
 
   return do_flash_request(request)
