@@ -36,6 +36,10 @@ COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH="/app/"
 
+# expose ports (metadata)
+EXPOSE 8080
+EXPOSE 5000
+
 # run
 # just using python3 _should_ work, it's in the path, but idk why not
 CMD ["/app/.venv/bin/python3", "gateway.py"]
