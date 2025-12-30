@@ -95,7 +95,7 @@ jobs:
       - name: Publish release
         run: |
           gh release create latest artifacts/esp32.zip \
-            --title "CREATOR SBC Gateway" \
+            --title "CREATOR ESP32 Gateway" \
             --latest \
             --target ${{ github.sha }} \
             --notes "Latest version of the CREATOR ESP32 Gateway"
