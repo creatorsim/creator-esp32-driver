@@ -254,10 +254,18 @@ def do_flash_request(request):
     #TODO: Add other boards here...           
     if error == 0:
       error = do_cmd(req_data, ['idf.py',  'set-target', target_board])
+    else:
+      req_data['status'] += 'Unreachable host...\n'   
     if error == 0:
       error = do_cmd(req_data, ['idf.py', 'build'])
+    else:
+      req_data['status'] += 'Unreachable host...\n'    
     if error == 0:
       error = do_cmd(req_data, ['idf.py', '-p', target_device, 'flash'])
+    if error == 0:
+      req_data['status'] += 'Flash completed successfully.\n'
+    else:
+      req_data['status'] += 'Unreachable host...\n'     
 
   except Exception as e:
     logging.exception(e)
